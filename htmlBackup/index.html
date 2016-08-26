@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title>JQuery examen</title>
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="plugins/iCheck/flat/blue.css">
+  <!-- Morris chart -->
+  <link rel="stylesheet" href="plugins/morris/morris.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Date Picker -->
+  <link rel="stylesheet" href="plugins/datepicker/datepicker3.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <!-- bootstrap wysihtml5 - text editor -->
+  <link rel="stylesheet" href="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <script src="js/jquery.js" type="text/javascript"></script>
+  <script src="js/bootstrap.min.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+
+	function loadData(id,nombres,apellidos,nota){
+			$("#IdTxt").val(id);
+			$("#NombresTxt").val(nombres);
+			$("#ApellidosTxt").val(apellidos);
+			$("#NotaTxt").val(nota);
+	}
+
+	function eliminarInformacion(id){
+			$("#"+id).remove();
+	}
+
+	function ajaxCall(FileToVisit){
+    $.ajax({
+                        url:  FileToVisit,
+                        async: false,
+                        success:    function(json){
+                          var response = "";
+						  	response = response + "<thead>";
+						  	response = response + "<tr>";
+						  		response = response + "<th>Codigo<td>";
+						  		response = response + "<th>Nombres<td>";
+						  		response = response + "<th>Apellidos<td>";
+						  		response = response + "<th>Nota<td>";
+						  		response = response + "<th>Modificar<td>";
+						  		response = response + "<th>Eliminar<td>";
+						  		response = response + "</tr>";
+						  		response = response + "</thead>";
+						  		response = response + "<tbody id='tBody'>";
+						  	for (var i = 0; i < json.length; i++) {
+						  		response = response + "<tr id='" + json[i].codigo + "'>";
+						  		response = response + "<td>" + json[i].codigo + "<td>";
+						  		response = response + "<td>" + json[i].nombres + "<td>";
+						  		response = response + "<td>" + json[i].apellidos + "<td>";
+						  		response = response + "<td>" + json[i].nota + "<td>";
+						  		response = response + "<td><a class='btn btn-primary' onClick='loadData(\""+json[i].codigo+"\",\""+json[i].nombres+"\",\""+json[i].apellidos+"\",\""+json[i].nota+"\")'>Modificar</a><td>";
+								response = response + "<td><a class='btn btn-primary' onClick='eliminarInformacion(\""+json[i].codigo+"\")'>Eliminar</a><td>";
+						  		response = response + "</tr>";
+						  	}
+						  	response = response + "</tbody>";
+						  	$("#tablaJSON").empty();
+						  	$("#tablaJSON").append(response);
+                        }
+                   }); 
+  }
+
+	$(document).ready(function(){
+		ajaxCall("js/datos.json");
+
+		$("#guardarBtn").click(function(){
+			var Id = $.trim($("#IdTxt").val());
+			var Nombres = $.trim($("#NombresTxt").val());
+			var Apellidos = $.trim($("#ApellidosTxt").val());
+			var Nota = $.trim($("#NotaTxt").val());
+
+			if($("#"+Id).html() == undefined){
+				
+			var response = "";
+			response = response + "<tr id='"+Id+"'>";
+			response = response + "<th>"+Id+"<td>";
+			response = response + "<th>"+Nombres+"<td>";
+			response = response + "<th>"+Apellidos+"<td>";
+			response = response + "<th>"+Nota+"<td>";
+			response = response + "<td><a class='btn btn-primary' onClick='loadData(\""+Id+"\",\""+Nombres+"\",\""+Apellidos+"\",\""+Nota+"\")'>Modificar</a><td>";
+								response = response + "<td><a class='btn btn-primary' onClick='eliminarInformacion(\""+Id+"\")'>Eliminar</a><td>";
+						  		response = response + "</tr>";
+
+			$("#tBody").append(response);
+			}
+			else{
+				alert("No se pueden ingresar 2 registros con el mismo id");
+			}
+		});
+
+		$("#modificarBtn").click(function(){
+			var Id = $.trim($("#IdTxt").val());
+			var Nombres = $.trim($("#NombresTxt").val());
+			var Apellidos = $.trim($("#ApellidosTxt").val());
+			var Nota = $.trim($("#NotaTxt").val());
+
+			if($("#"+Id).html() != undefined){
+				var response = "";
+			response = response + "<th>"+Id+"<td>";
+			response = response + "<th>"+Nombres+"<td>";
+			response = response + "<th>"+Apellidos+"<td>";
+			response = response + "<th>"+Nota+"<td>";
+			response = response + "<td><a class='btn btn-primary' onClick='loadData(\""+Id+"\",\""+Nombres+"\",\""+Apellidos+"\",\""+Nota+"\")'>Modificar</a><td>";
+								response = response + "<td><a class='btn btn-primary' onClick='eliminarInformacion(\""+Id+"\")'>Eliminar</a><td>";
+			$("#"+Id).empty();
+			$("#"+Id).append(response);
+			}else{
+				alert("No existe el registro con id: "+Id);
+			}
+
+			
+		});
+
+	});
+
+		
+	</script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+	 <div class="container">
+	 	<div class="row">
+    <div class="col-lg-8 col-md-7 col-sm-6">
+      <h1>JQuery</h1>
+      <p class="lead">con AJAX</p>
+    </div>
+</div>
+		<div class="row">
+			<table class="table table-striped table-hover ">
+				<tr>
+					<td>Id</td>
+					<td><input class="form-control" id="IdTxt" placeholder="Id" type="text"></td>
+				</tr>
+				<tr>
+					<td>Nombres</td>
+					<td><input class="form-control" id="NombresTxt" placeholder="Nombres" type="text"></td>
+				</tr>
+				<tr>
+					<td>Apellidos</td>
+					<td><input class="form-control" id="ApellidosTxt" placeholder="Apellidos" type="text"></td>
+				</tr>
+				<tr>
+					<td>Nota</td>
+					<td><input class="form-control" id="NotaTxt" placeholder="Nota" type="number"></td>
+				</tr>
+				<tr>
+					<td>Ingresar</td>
+					<td><a class="btn btn-primary" id="guardarBtn">Guardar</a></td>
+				</tr>
+				<tr>
+					<td>Modificar</td>
+					<td><a class="btn btn-primary" id="modificarBtn">Modificar</a></td>
+				</tr>
+		    </table>
+		</div>
+	 	<div class="row">
+			<div class="bs-component">
+		    <table id="tablaJSON" class="table table-striped table-hover ">
+
+		    </table>
+			</div>
+   		 </div>
+</div>
+</body>
+</html>

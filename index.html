@@ -17,8 +17,7 @@
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
-<!--   <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
- -->  
+
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -113,52 +112,31 @@
             <div class="box box-info">
                 <div class="box-header">
                   <h3 class="box-title">Estudiantes</h3>                 
-                  <div  class="box-tools pull-rightt">
+                  <div class="box-tools pull-rightt">
                     
                     <button type="button" class="btn btn-success" 
-                      data-toggle="tooltip" title="Agregar registro" data-target="modal1" data-toggle="modal1">
+                      data-toggle="modal" data-target="#myModal" title="Agregar registro" onClick="newId()">
                         <i class="fa fa-plus"></i></button>
-                
-                   
-                        
                   </div>
-
-              <!--     <a data-toggle="modal" href="#example" class="btn btn-primary btn-large">Abrir ventana modal</a>
-
-                  <div id="example" class="modal hide fade in" style="display: none;">
-                      <div class="modal-header">
-                          <a data-dismiss="modal" class="close">×</a>
-                          <h3>Cabecera de la ventana</h3>
-                       </div>
-                       <div class="modal-body">
-                           <h4>Texto de la ventana</h4>
-                          <p>Mas texto en la ventana.</p>                
-                      </div>
-                      <div class="modal-footer">
-                          <a href="index.html" class="btn btn-success">Guardar</a>
-                          <a href="#" data-dismiss="modal" class="btn">Cerrar</a>
-                      </div>
-                  </div> -->
-
-            
-        
-
-
 
                 </div>
                 <div class="box-body">
                   <table id="tbl" class="table table-hover table-striped">
+                    <thead>
                     <tr>
                       <th style="width: 10%" class="text-center">Código</th>
-                      <th style="width: 40%" class="text-center">Apellidos</th>
-                      <th style="width: 40%" class="text-center">Nombres</th>
+                      <th style="width: 35%" class="text-center">Apellidos</th>
+                      <th style="width: 35%" class="text-center">Nombres</th>
                       <th style="width: 10%" class="text-center">Nota</th>
                       <th style="width: 10%" class="text-center">Acción</th>
                     </tr>
+                    </thead>
+                    <tbody id="tablaJSON">
+                      
+                    </tbody>
                   </table>
                 </div>
             </div>
-            
 
         </div>
         <!-- /.box-body -->
@@ -179,6 +157,42 @@
   </div>
   <!-- /.content-wrapper -->
 
+  <!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Agregar registro</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-hover ">
+        <tr>
+          <td>Id</td>
+          <td><input class="form-control" id="IdTxt" placeholder="Id" type="text"></td>
+        </tr>
+        <tr>
+          <td>Nombres</td>
+          <td><input class="form-control" id="NombresTxt" placeholder="Nombres" type="text"></td>
+        </tr>
+        <tr>
+          <td>Apellidos</td>
+          <td><input class="form-control" id="ApellidosTxt" placeholder="Apellidos" type="text"></td>
+        </tr>
+        <tr>
+          <td>Nota</td>
+          <td><input class="form-control" id="NotaTxt" placeholder="Nota" type="number"></td>
+        </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="guardarBtn">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
       <b>Version</b> 2.3.6
@@ -193,7 +207,7 @@
 <!-- ./wrapper -->
 
 <!-- jQuery 2.2.3 -->
-<script type= "text/javascript" src="plugins/jQuery/jquery-2.2.3.min.js"></script>
+<script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
 <!-- Bootstrap 3.3.6 -->
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <!-- SlimScroll -->
@@ -202,8 +216,120 @@
 <script src="plugins/fastclick/fastclick.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/app.min.js"></script>
-<script type="text/javascript" src="index.js"></script>
 
+<script type="text/javascript">
+
+  var functionToCarryOut = 1;
+
+  function loadData(id,nombres,apellidos,nota){
+      $("#IdTxt").val(id);
+      $("#NombresTxt").val(nombres);
+      $("#ApellidosTxt").val(apellidos);
+      $("#NotaTxt").val(nota);
+      functionToCarryOut = 2;
+  }
+
+  function newId(){
+      $("#IdTxt").val("");
+      $("#NombresTxt").val("");
+      $("#ApellidosTxt").val("");
+      $("#NotaTxt").val("");
+      functionToCarryOut = 1;
+  }
+
+  function eliminarInformacion(id){
+      $("#"+id).remove();
+  }
+
+  function ajaxCall(FileToVisit){
+    $.ajax({
+                        url:  FileToVisit,
+                        async: false,
+                        success:    function(json){
+                          var response = "";
+                for (var i = 0; i < json.length; i++) {
+                  response = response + "<tr id='" + json[i].codigo + "' class='text-center'>";
+                  response = response + "<td>" + json[i].codigo + "</td>";
+                  response = response + "<td>" + json[i].nombres + "</td>";
+                  response = response + "<td>" + json[i].apellidos + "</td>";
+                  response = response + "<td>" + json[i].nota + "</td>";
+                  response = response + "<td><a data-toggle=\"modal\" data-target=\"#myModal\"  class='btn btn-warning' onClick='loadData(\""+json[i].codigo+"\",\""+json[i].nombres+"\",\""+json[i].apellidos+"\",\""+json[i].nota+"\")'><i class=\"fa fa-edit\"></i></a>";
+                response = response + "<a class='btn btn-danger' onClick='eliminarInformacion(\""+json[i].codigo+"\")'><i class=\"fa fa-close\"></i></a></td>";
+                  response = response + "</tr>";
+                }
+                $("#tablaJSON").empty();
+                $("#tablaJSON").append(response);
+                        }
+                   }); 
+  }
+
+  function Modificar(){
+    var Id = $.trim($("#IdTxt").val());
+      var Nombres = $.trim($("#NombresTxt").val());
+      var Apellidos = $.trim($("#ApellidosTxt").val());
+      var Nota = $.trim($("#NotaTxt").val());
+if(Id != "" && Nombres != "" && Apellidos != "" && Nota != ""){
+      if($("#"+Id).html() != undefined){
+        var response = "";
+      response = response + "<td>"+Id+"</td>";
+      response = response + "<td>"+Nombres+"</td>";
+      response = response + "<td>"+Apellidos+"</td>";
+      response = response + "<td>"+Nota+"</td>";
+      response = response + "<td><a data-toggle=\"modal\" data-target=\"#myModal\"  class='btn btn-warning' onClick='loadData(\""+Id+"\",\""+Nombres+"\",\""+Apellidos+"\",\""+Nota+"\")'><i class=\"fa fa-edit\"></i></a>";
+                response = response + "<a class='btn btn-danger' onClick='eliminarInformacion(\""+Id+"\")'><i class=\"fa fa-close\"></i></a></td>";
+      $("#"+Id).empty();
+      $("#"+Id).append(response);
+      }else{
+        alert("No existe el registro con id: "+Id);
+      }}else{
+        alert("Ingrese todos los campos");
+      }
+  }
+
+  function Ingresar(){
+    var Id = $.trim($("#IdTxt").val());
+      var Nombres = $.trim($("#NombresTxt").val());
+      var Apellidos = $.trim($("#ApellidosTxt").val());
+      var Nota = $.trim($("#NotaTxt").val());
+      if(Id != "" && Nombres != "" && Apellidos != "" && Nota != ""){
+
+      if($("#"+Id).val() == undefined){
+        
+      var response = "";
+      response = response + "<tr id='"+Id+"' class='text-center'>";
+      response = response + "<td>"+Id+"</td>";
+      response = response + "<td>"+Nombres+"</td>";
+      response = response + "<td>"+Apellidos+"</td>";
+      response = response + "<td>"+Nota+"</td>";
+      response = response + "<td><a data-toggle=\"modal\" data-target=\"#myModal\"  class='btn btn-warning' onClick='loadData(\""+Id+"\",\""+Nombres+"\",\""+Apellidos+"\",\""+Nota+"\")'><i class=\"fa fa-edit\"></i></a>";
+                response = response + "<a class='btn btn-danger' onClick='eliminarInformacion(\""+Id+"\")'><i class=\"fa fa-close\"></i></a></td>";
+                  response = response + "</tr>";
+
+      $("#tablaJSON").append(response);
+      }
+      else{
+        alert("No se pueden ingresar 2 registros con el mismo id");
+      }
+    }else{
+        alert("Ingrese todos los campos");
+      }
+  }
+
+  $(document).ready(function(){
+    ajaxCall("data/estudiantes.json");
+
+    $("#guardarBtn").click(function(){
+      if(functionToCarryOut == 1){
+        Ingresar();
+      }else if(functionToCarryOut == 2){
+        Modificar();
+      }
+    });
+
+  });
+
+    
+  </script>
 
 </body>
 </html>
